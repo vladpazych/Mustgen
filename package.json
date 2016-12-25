@@ -4,7 +4,7 @@
   "description": "File generator for mustache.js templates",
   "main": "main.js",
   "repository": {
-    "url": "git+https://github.com/smartbiz/angular2-dashboard.git"
+    "url": "git+https://github.com/vladpazych/mustgen"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -69,7 +69,7 @@ And this is block of Stephen King.
 ```
 
 ### Code generation example
-Check out [EntitasMustgen](), it's a boilerplate for Entitas users. Mustgen used to generate Entitas API.
+Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas users. Mustgen used to generate Entitas API.
 
 
 ## Maintainer
