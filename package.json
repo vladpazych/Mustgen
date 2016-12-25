@@ -1,9 +1,9 @@
 {
   "name": "mustgen",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "File generator for mustache.js templates",
   "main": "main.js",
-  "url" : "https://github.com/vladpazych/mustgen",
+  "url": "https://github.com/vladpazych/mustgen",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
