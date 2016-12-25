@@ -1,6 +1,6 @@
 {
   "name": "mustgen",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "File generator for mustache.js templates",
   "main": "main.js",
   "repository": {
