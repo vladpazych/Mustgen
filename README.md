@@ -5,9 +5,18 @@ It takes {{mustached}} template and javascript object as a map with values and f
 ## Why it exists?
 It was created as an alternative code generator for [Entitas](https://github.com/sschmid/Entitas-CSharp).
 
-## How to use?
+## Quick start
 
-### 1. Install
+### 0. Have Node.js installed
+If you don't have node.js installed on your machine, install from [Node.js website](https://nodejs.org/en/download/).
+
+### 1. Go to your project path
+```bash
+$ cd pathToYourProject
+```
+
+
+### 1. Install mustgen
 ```bash
 $ npm install mustgen --save
 ```
@@ -71,6 +80,7 @@ And this is block of Stephen King.
 ### Code generation example
 Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas users. Mustgen used to generate Entitas API.
 
+# 
 
 ## Maintainer
 * [@vladpazych](https://github.com/vladpazych)
