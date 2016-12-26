@@ -48,7 +48,11 @@ var helloFile = {
     }
 }
 
-module.exports = [helloFile];
+module.exports = {
+    files: [helloFile],
+    helpers: {},
+    partials: {}
+};
 ```
 
 

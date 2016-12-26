@@ -9,22 +9,27 @@ module.exports = function generate(mapFilePath) {
     var map = require(mapFilePath);
     var mainPath = getDirFromFile(mapFilePath);
 
-    for (var i = 0; i < map.length; i++) {
-        (function (i) {
-            if (!checkMapStructure(map, i)) return;
+    var partials = getPartials(mainPath, map.partials);
+    for (var key in partials) {
+        Handlebars.registerPartial(key, partials[key]);
+    }
 
-            var file = map[i];
+    var helpers = map.helpers;
+    for (var key in helpers) {
+        Handlebars.registerHelper(key, helpers[key]);
+    }
+
+    for (var i = 0; i < map.files.length; i++) {
+        (function (i) {
+            if (!checkMapStructure(map.files, i)) return;
+
+            var file = map.files[i];
             var templatePath = path.join(mainPath, file.template);
             var outputPath = path.join(mainPath, file.output);
-            var partials = getPartials(mainPath, file.partials);
+
             var data = file.data;
 
-            for (var key in partials) {
-                Handlebars.registerPartial(key, partials[key]);
-            }
-
             var outputContent;
-
 
             cleanGenerateDir(outputPath)
                 .then(function () {
@@ -45,11 +50,11 @@ module.exports = function generate(mapFilePath) {
                 })
                 .catch(showError)
                 .then(function () {
-                    if (i == map.length - 1) {
+                    if (i == map.files.length - 1) {
                         var endTime = Date.now();
                         var resultTime = prettyDate(endTime, startTime);
                         var fdef = i > 1 ? "files" : "file";
-                        console.log("Generation complete: " + map.length + " " + fdef + " generated in " + resultTime)
+                        console.log("Generation complete: " + map.files.length + " " + fdef + " generated in " + resultTime)
                     }
                 });
         })(i);
