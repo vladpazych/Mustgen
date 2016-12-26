@@ -1,7 +1,7 @@
 {
   "name": "mustgen",
   "version": "0.1.4",
-  "description": "File generator for mustache.js templates",
+  "description": "File generator for handlebars templates",
   "main": "main.js",
   "repository": {
     "url": "git+https://github.com/vladpazych/mustgen"
