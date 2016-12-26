@@ -36,7 +36,7 @@ And this is block of {{name}} {{lastname}}.
 ### 3. Add `map.js` at root of your project
 ```javascript
 var helloFile = {
-    template: 'project/templates/hello.mustgen',
+    template: 'hello.mustgen',
     output: 'generated/hello.txt',
     data: {
         name: "totally useful tool",
@@ -55,10 +55,7 @@ module.exports = [helloFile];
 
 ### 4. Add `server.js` at root of your project
 ```javascript
-var map = require('./map');
-var mustgen = require('mustgen');
-
-mustgen('./', map);
+require('mustgen')('./', './map');
 ```
 
 
@@ -80,7 +77,8 @@ And this is block of Stephen King.
 ### Code generation example
 Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas users. Mustgen used to generate Entitas API.
 
-# 
+## Roadmap
+- [ ] Create global version of package
 
 ## Maintainer
 * [@vladpazych](https://github.com/vladpazych)
