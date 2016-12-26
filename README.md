@@ -61,7 +61,6 @@ require('mustgen')('./', './map');
 
 ### 5. Run server
 ```bash
-$ cd pathToYourProject
 $ node server
 ```
 
@@ -75,7 +74,7 @@ And this is block of Stephen King.
 ```
 
 ### Code generation example
-Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas users. Mustgen used to generate Entitas API.
+Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas API generation.
 
 ## Roadmap
 - [ ] Create global version of package
