@@ -1,8 +1,8 @@
-var mustache = require('mustache');
 var fs = require('fs-extra');
 var path = require('path');
 var mkdirp = require('mkdirp');
 var Promise = require('promise');
+var Handlebars = require('handlebars');
 
 module.exports = function generate(mapFilePath) {
     var startTime = Date.now();
@@ -19,7 +19,12 @@ module.exports = function generate(mapFilePath) {
             var partials = getPartials(mainPath, file.partials);
             var data = file.data;
 
+            for (var key in partials) {
+                Handlebars.registerPartial(key, partials[key]);
+            }
+
             var outputContent;
+
 
             cleanGenerateDir(outputPath)
                 .then(function () {
@@ -49,8 +54,6 @@ module.exports = function generate(mapFilePath) {
                 });
         })(i);
     }
-
-
 }
 
 //
@@ -94,14 +97,11 @@ function ensureDir(outputPath) {
 
 function renderTemplate(template, data, partials) {
     return new Promise(function (fulfill, reject) {
-        var output = mustache.render(template, data, partials);
+        var compiled = Handlebars.compile(template);
+        var output = compiled(data);
         fulfill(output);
     });
 }
-
-
-
-
 
 
 

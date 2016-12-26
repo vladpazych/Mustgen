@@ -1,6 +1,6 @@
 ## What is Mustgen?
-Mustgen is a very simple file generator based on [mustache.js](https://github.com/janl/mustache.js).
-It takes {{mustached}} template and javascript object as a map with values and file definitions, then generates string with mustache.js, and then writes it to a file.
+Mustgen is a very simple file generator based on [handlebars](https://github.com/wycats/handlebars.js).
+It takes {{mustached}} template and javascript object as a map with values and file definitions, then generates string using handlebars, and writes it to a file.
 
 ## Why it exists?
 It was created as an alternative code generator for [Entitas](https://github.com/sschmid/Entitas-CSharp).
@@ -16,14 +16,14 @@ $ cd pathToYourProject
 ```
 
 
-### 1. Install mustgen
+### 1. Install Mustgen
 ```bash
 $ npm install mustgen --save
 ```
 
-### 2. Add template `hello.mustgen` at root of your project
+### 2. Add template `hello.hbs` at root of your project
 
-```
+```handlebars
 Hello {{name}}.
 
 Random words: {{#words}}{{.}} {{/words}}
@@ -36,7 +36,7 @@ And this is block of {{name}} {{lastname}}.
 ### 3. Add `map.js` at root of your project
 ```javascript
 var helloFile = {
-    template: 'hello.mustgen',
+    template: 'hello.hbs',
     output: 'generated/hello.txt',
     data: {
         name: "totally useful tool",
@@ -75,6 +75,9 @@ And this is block of Stephen King.
 
 ### Code generation example
 Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a boilerplate for Entitas API generation.
+
+### Handlebars docs
+**[Handlebars website](http://handlebarsjs.com/) | [Handlebars GitHub](https://github.com/wycats/handlebars.js)**
 
 ## Roadmap
 - [ ] Create global version of package
