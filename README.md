@@ -37,7 +37,7 @@ And this is block of {{name}} {{lastname}}.
 ```javascript
 var helloFile = {
     template: 'hello.hbs',
-    output: 'generated/hello.txt',
+    output: 'hello.txt',
     data: {
         name: "totally useful tool",
         words: ["Lonely", "Sad", "Depressed"],
@@ -51,7 +51,11 @@ var helloFile = {
 module.exports = {
     files: [helloFile],
     helpers: {},
-    partials: {}
+    partials: {},
+    // For safety reasons, output folder name 
+    // should contain '_generated'. 
+    // This folder will be constantly cleaned.
+    output: '_generated'
 };
 ```
 
@@ -83,8 +87,7 @@ Check out [EntitasMustgen](https://github.com/vladpazych/EntitasMustgen), it's a
 ### Handlebars docs
 **[Handlebars website](http://handlebarsjs.com/) | [Handlebars GitHub](https://github.com/wycats/handlebars.js)**
 
-## Roadmap
-- [ ] Create global version of package
+<!--## Roadmap-->
 
 ## Maintainer
 * [@vladpazych](https://github.com/vladpazych)

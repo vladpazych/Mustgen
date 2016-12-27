@@ -1,13 +1,19 @@
 var fs = require('fs-extra');
 var path = require('path');
-var mkdirp = require('mkdirp');
 var Promise = require('promise');
 var Handlebars = require('handlebars');
+var generatedSuffix = "_generated";
 
 module.exports = function generate(mapFilePath) {
     var startTime = Date.now();
     var map = require(mapFilePath);
     var mainPath = getDirFromFile(mapFilePath);
+    var outputPath = path.join(mainPath, map.output);
+
+    if (!map.output.includes(generatedSuffix)) {
+        showError("For safety reasons, output folder name should contain " + generatedSuffix + " part.");
+        return;
+    }
 
     var partials = getPartials(mainPath, map.partials);
     for (var key in partials) {
@@ -19,46 +25,43 @@ module.exports = function generate(mapFilePath) {
         Handlebars.registerHelper(key, helpers[key]);
     }
 
-    for (var i = 0; i < map.files.length; i++) {
-        (function (i) {
-            if (!checkMapStructure(map.files, i)) return;
+    cleanGenerateDir(outputPath)
+        .then(function () {
+            for (var i = 0; i < map.files.length; i++) {
+                (function (i) {
+                    if (!checkMapStructure(map.files, i)) return;
 
-            var file = map.files[i];
-            var templatePath = path.join(mainPath, file.template);
-            var outputPath = path.join(mainPath, file.output);
+                    var file = map.files[i];
+                    var templatePath = path.join(mainPath, file.template);
+                    var fileOutputPath = path.join(outputPath, file.output);
 
-            var data = file.data;
+                    var data = file.data;
 
-            var outputContent;
+                    var outputContent;
 
-            cleanGenerateDir(outputPath)
-                .then(function () {
-                    return readTemplateFile(templatePath);
-                })
-                .catch(showError)
-                .then(function (template) {
-                    return renderTemplate(template, data, partials);
-                })
-                .catch(showError)
-                .then(function (output) {
-                    outputContent = output;
-                    return ensureDir(outputPath);
-                })
-                .catch(showError)
-                .then(function () {
-                    return writeTemplateToFile(outputPath, outputContent);
-                })
-                .catch(showError)
-                .then(function () {
-                    if (i == map.files.length - 1) {
-                        var endTime = Date.now();
-                        var resultTime = prettyDate(endTime, startTime);
-                        var fdef = i > 1 ? "files" : "file";
-                        console.log("Generation complete: " + map.files.length + " " + fdef + " generated in " + resultTime)
-                    }
-                });
-        })(i);
-    }
+                    readTemplateFile(templatePath)
+                        .then(function (template) {
+                            return renderTemplate(template, data, partials);
+                        })
+                        .then(function (output) {
+                            outputContent = output;
+                            return ensureDir(fileOutputPath);
+                        })
+                        .then(function () {
+                            return writeTemplateToFile(fileOutputPath, outputContent);
+                        })
+                        .then(function () {
+                            if (i == map.files.length - 1) {
+                                var endTime = Date.now();
+                                var resultTime = prettyDate(endTime, startTime);
+                                var fdef = i > 1 ? "files" : "file";
+                                console.log("Generation complete: " + map.files.length + " " + fdef + " generated in " + resultTime)
+                            }
+                        })
+                        .done();
+                })(i);
+            }
+        });
 }
 
 //
@@ -66,10 +69,18 @@ module.exports = function generate(mapFilePath) {
 //
 function cleanGenerateDir(outputPath) {
     return new Promise(function (fulfill, reject) {
-        fs.emptyDir(getDirFromFile(outputPath), function (err) {
-            if (err) reject(err);
-            else fulfill();
-        })
+        var arr = outputPath.split('/');
+        var dir = arr[arr.length - 1];
+        if (dir.includes("_generated")) {
+            fs.emptyDir(outputPath, function (err) {
+                if (err) reject(err);
+                else fulfill();
+            })
+        } else {
+            reject();
+            showError("Can't clean directory without '" + generatedSuffix + "' part in it's name.");
+            console.log(outputPath);
+        }
     });
 }
 
@@ -93,7 +104,7 @@ function writeTemplateToFile(outputPath, outputContent) {
 
 function ensureDir(outputPath) {
     return new Promise(function (fulfill, reject) {
-        mkdirp(getDirFromFile(outputPath), function (err) {
+        fs.ensureDir(getDirFromFile(outputPath), function (err) {
             if (err) reject(err);
             else fulfill();
         });
@@ -147,10 +158,41 @@ function getPartials(mainPath, obj) {
     return result;
 }
 
+function addSuffixToFileName(str) {
+    var arr = str.split('/');
+    arr.pop();
+    var last = arr[arr.length - 1].split(".");
+    arr[arr.length - 1] = last[0] + generatedSuffix + "." + last[1];
+    return arr.join('/');
+}
+
 function getDirFromFile(str) {
     var arr = str.split('/');
     arr.pop();
     return arr.join('/');
+}
+
+var getAllFiles = function (dir, filelist) {
+    var files = fs.readdirSync(dir);
+    filelist = filelist || [];
+    files.forEach(function (file) {
+        if (fs.statSync(path.join(dir, file)).isDirectory()) {
+            filelist = getAllFiles(path.join(dir, file), filelist);
+        }
+        else {
+            filelist.push(path.join(dir, file));
+        }
+    });
+    return filelist;
+};
+
+function fsExistsSync(myDir) {
+    try {
+        fs.accessSync(myDir);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
 
