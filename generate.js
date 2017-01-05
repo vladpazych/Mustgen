@@ -25,7 +25,7 @@ module.exports = function generate(mapFilePath) {
         Handlebars.registerHelper(key, helpers[key]);
     }
 
-    cleanGenerateDir(outputPath)
+    cleanGenerateDir(outputPath, map.files)
         .then(function () {
             for (var i = 0; i < map.files.length; i++) {
                 (function (i) {
@@ -67,15 +67,31 @@ module.exports = function generate(mapFilePath) {
 //
 // Promises
 //
-function cleanGenerateDir(outputPath) {
+function cleanGenerateDir(outputPath, files) {
     return new Promise(function (fulfill, reject) {
         var arr = outputPath.split('/');
         var dir = arr[arr.length - 1];
+        var allFiles = getAllFiles(outputPath, null, '.meta');
+        var neededFiles = getFileListFromFileObject(outputPath, files);
+        var filesToDelete = [];
+
+        for (var i = 0; i < allFiles.length; i++) {
+            var currentFile = allFiles[i];
+            if (neededFiles.indexOf(currentFile) == -1) filesToDelete.push(currentFile);
+        }
+
         if (dir.includes("_generated")) {
-            fs.emptyDir(outputPath, function (err) {
-                if (err) reject(err);
-                else fulfill();
-            })
+            for (var i = 0; i < filesToDelete.length; i++) {
+                fs.unlink(filesToDelete[i]);
+            }
+            
+            fulfill();
+
+            // Temporarly commented beacuse we may return to this solution, it's faster.
+            // fs.emptyDir(outputPath, function (err) {
+            //     if (err) reject(err);
+            //     else fulfill();
+            // })
         } else {
             reject();
             showError("Can't clean directory without '" + generatedSuffix + "' part in it's name.");
@@ -172,19 +188,34 @@ function getDirFromFile(str) {
     return arr.join('/');
 }
 
-var getAllFiles = function (dir, filelist) {
+function getAllFiles(dir, filelist, excepthEnding) {
     var files = fs.readdirSync(dir);
     filelist = filelist || [];
     files.forEach(function (file) {
         if (fs.statSync(path.join(dir, file)).isDirectory()) {
-            filelist = getAllFiles(path.join(dir, file), filelist);
+            filelist = getAllFiles(path.join(dir, file), filelist, excepthEnding);
         }
         else {
-            filelist.push(path.join(dir, file));
+            if (excepthEnding) {
+                if (file.indexOf(excepthEnding) == -1) {
+                    filelist.push(path.join(dir, file));
+                }
+            } else {
+                filelist.push(path.join(dir, file));
+            }
         }
     });
     return filelist;
-};
+}
+
+function getFileListFromFileObject(outputPath, files) {
+    var result = [];
+    for (var key in files) {
+        result.push(path.join(outputPath, files[key].output));
+    }
+
+    return result;
+}
 
 function fsExistsSync(myDir) {
     try {
