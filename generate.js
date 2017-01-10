@@ -129,7 +129,7 @@ function ensureDir(outputPath) {
 
 function renderTemplate(template, data, partials) {
     return new Promise(function (fulfill, reject) {
-        var compiled = Handlebars.compile(template);
+        var compiled = Handlebars.compile(template, {noEscape: true});
         var output = compiled(data);
         fulfill(output);
     });
