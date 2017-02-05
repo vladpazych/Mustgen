@@ -25,7 +25,8 @@ module.exports = function generate(mapFilePath) {
         Handlebars.registerHelper(key, helpers[key]);
     }
 
-    cleanGenerateDir(outputPath, map.files)
+    ensureDir(outputPath)
+        .then(cleanGenerateDir(outputPath, map.files))
         .then(function () {
             for (var i = 0; i < map.files.length; i++) {
                 (function (i) {
@@ -84,7 +85,7 @@ function cleanGenerateDir(outputPath, files) {
             for (var i = 0; i < filesToDelete.length; i++) {
                 fs.unlink(filesToDelete[i]);
             }
-            
+
             fulfill();
 
             // Temporarly commented beacuse we may return to this solution, it's faster.
@@ -129,7 +130,7 @@ function ensureDir(outputPath) {
 
 function renderTemplate(template, data, partials) {
     return new Promise(function (fulfill, reject) {
-        var compiled = Handlebars.compile(template, {noEscape: true});
+        var compiled = Handlebars.compile(template, { noEscape: true });
         var output = compiled(data);
         fulfill(output);
     });
